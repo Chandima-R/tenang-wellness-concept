@@ -1,26 +1,377 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-void:   #0B0B0C;   /* Primary dark (backgrounds, luxury feel) */
+  --color-deep:   #1A1C18;   /* Secondary dark (cards, layering) */
+
+  --color-forest: #183F2F;   /* Primary brand green (logo) */
+  --color-sage:   #4E7A64;   /* Secondary green */
+  --color-moss:   #8FAF9B;   /* Light green accent */
+
+  --color-earth:  #2A1808;   /* Deep brown */
+  --color-teak:   #8A5A3B;   /* Warmer wood tone */
+  --color-amber:  #C89A6B;   /* Premium accent */
+
+  --color-sand:   #C9B8A3;   /* Base neutral */
+  --color-ivory:  #F1ECE4;   /* Main background */
+  --color-mist:   #DDD6CC;   /* Soft divider */
+
+  --color-stone:  #6F6A63;   /* Muted text */
+  --color-light:  #FAF7F2;   /* Lightest background */
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Jost', 'Helvetica Neue', Arial, sans-serif;
+
+  --ease-expo:    cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-luxury:  cubic-bezier(0.25, 0.1, 0, 1);
+  --ease-reveal:  cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Reset ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-void);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: auto; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background: var(--color-void);
+  color: var(--color-ivory);
+  overflow-x: hidden;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Typography ──────────────────────────────────────── */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+em { font-style: italic; }
+
+/* ── Noise Texture ───────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Custom Cursor ───────────────────────────────────── */
+.cur-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--color-ivory);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: background 0.3s, transform 0.15s;
+  mix-blend-mode: difference;
+}
+
+.cur-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(237, 232, 223, 0.5);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.45s var(--ease-expo), height 0.45s var(--ease-expo), border-color 0.3s, background 0.3s;
+}
+
+.cur-ring.is-hovering {
+  width: 80px;
+  height: 80px;
+  border-color: var(--color-amber);
+  background: rgba(196, 145, 106, 0.06);
+}
+
+.cur-ring.is-img {
+  width: 100px;
+  height: 100px;
+  border: none;
+  background: rgba(196, 145, 106, 0.12);
+}
+
+/* ── Navigation ──────────────────────────────────────── */
+.nav-root {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9000;
+  padding: 2rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  mix-blend-mode: difference;
+}
+
+.nav-logo {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+  text-decoration: none;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  position: relative;
+}
+
+.nav-link:hover { opacity: 1; }
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 1px;
+  background: var(--color-ivory);
+  transition: width 0.4s var(--ease-expo);
+}
+
+.nav-link:hover::after { width: 100%; }
+
+.nav-reserve {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+  text-decoration: none;
+  opacity: 1;
+  padding: 0.7rem 1.6rem;
+  border: 1px solid rgba(237,232,223,0.3);
+  transition: all 0.4s var(--ease-expo);
+}
+
+.nav-reserve:hover {
+  background: var(--color-ivory);
+  color: var(--color-void);
+  border-color: var(--color-ivory);
+}
+
+/* ── Menu Full-Screen ────────────────────────────────── */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-void);
+  z-index: 8900;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 4rem;
+}
+
+/* ── Intro Screen ────────────────────────────────────── */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: var(--color-void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* ── Label style ─────────────────────────────────────── */
+.label {
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.label::before {
+  content: '';
+  display: block;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--color-stone);
+}
+
+/* ── Magnetic Button ─────────────────────────────────── */
+.mag-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 1.1rem 2.8rem;
+  border: 1px solid var(--color-amber);
+  color: var(--color-amber);
+  transition: color 0.4s, background 0.4s;
+  overflow: hidden;
+}
+
+.mag-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-amber);
+  transform: translateY(101%);
+  transition: transform 0.5s var(--ease-expo);
+}
+
+.mag-btn:hover { color: var(--color-void); }
+.mag-btn:hover::before { transform: translateY(0); }
+
+.mag-btn span { position: relative; z-index: 1; }
+
+/* ── Clip Reveal ─────────────────────────────────────── */
+.clip-hidden {
+  clip-path: inset(100% 0% 0% 0%);
+}
+
+.clip-visible {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1.6s var(--ease-expo);
+}
+
+/* ── Marquee ─────────────────────────────────────────── */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+.marquee-track-reverse {
+  animation-direction: reverse;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Horizontal Scroll ───────────────────────────────── */
+.h-scroll-container {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+.h-panel {
+  flex-shrink: 0;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Number Display ──────────────────────────────────── */
+.fig-num {
+  font-family: var(--font-display);
+  font-weight: 300;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+
+/* ── Image Hover Zoom ────────────────────────────────── */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 1.2s var(--ease-luxury);
+  transform-origin: center;
+}
+
+.img-zoom:hover img {
+  transform: scale(1.06);
+}
+
+/* ── Scroll Indicator ────────────────────────────────── */
+.scroll-indicator-v {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scroll-indicator-v .line {
+  width: 1px;
+  height: 3.5rem;
+  background: linear-gradient(to bottom, var(--color-ivory), transparent);
+  animation: scrollPulse 2.2s ease infinite;
+}
+
+@keyframes scrollPulse {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  50.01% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+
+/* ── Horizontal rule ─────────────────────────────────── */
+.rule {
+  width: 100%;
+  height: 1px;
+  background: rgba(237,232,223,0.1);
+}
+
+/* ── Dark / Light contexts ───────────────────────────── */
+.bg-light { background: var(--color-light); color: var(--color-void); }
+.bg-light .label { color: var(--color-teak); }
+.bg-light .label::before { background: var(--color-teak); }
+
+/* ── Responsive cursor hide ──────────────────────────── */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cur-dot, .cur-ring { display: none; }
+  .nav-root { padding: 1.5rem 2rem; }
+}
+
+/* ── Overflow chars (for split animation parent) ─────── */
+.overflow-clip { overflow: hidden; display: block; }
+
+/* ── Footer nav hover ────────────────────────────────── */
+.footer-nav-link {
+  transition: color 0.3s;
+}
+.footer-nav-link:hover {
+  color: var(--color-ivory) !important;
+}
+
+/* ── Overflow chars (for split animation parent) ─────── */
+.overflow-clip { overflow: hidden; display: block; }
