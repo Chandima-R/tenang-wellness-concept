@@ -2,6 +2,8 @@ import './globals.css';
 import {LenisProvider} from '@/components/providers/lenis-provider';
 import {CustomCursor} from '@/components/ui/custom-cursor';
 import {Intro} from '@/components/layout/intro';
+import {Navigation} from "../components/layout/navigation";
+import {Footer} from "../components/layout/footer";
 
 export const metadata = {
   title: 'TENANG — Where the Earth Holds Its Breath',
@@ -23,9 +25,9 @@ export default function RootLayout({ children }) {
       <LenisProvider>
         <CustomCursor />
         <Intro />
-        {/*<Navigation />*/}
+        <Navigation />
         <main>{children}</main>
-        {/*<Footer />*/}
+        <Footer />
       </LenisProvider>
       </body>
       </html>
